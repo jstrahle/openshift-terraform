@@ -91,7 +91,8 @@ resource "kubernetes_manifest" "wait_for_operator" {
 
   wait {
     fields = {
-    "data.check" = "operator-installed"
+    "metadata.namespace" = "validated-patterns-operator-check"
+    "metadata.name" = var.operator_namespace
     }
   }
 
@@ -142,11 +143,6 @@ resource "kubectl_manifest" "validated_patterns_pattern" {
   server_side_apply = true
   wait             = true
   
-  timeouts {
-    create = "15m"
-    update = "10m"
-    delete = "10m"
-  }
 }
 
 # Outputs
