@@ -84,7 +84,7 @@ resource "kubernetes_manifest" "wait_for_operator" {
 
   wait {
     fields = {
-    "metadata.name" = "validated-patterns-operator-check"
+    "data.check" = "operator-installed"
     }
   }
 
@@ -110,6 +110,29 @@ resource "kubernetes_manifest" "wait_for_operator" {
     EOT
   }
 }
+
+# Create Pattern
+resource "kubernetes_manifest" "validated_patterns_pattern" {
+  depends_on = [kubernetes_manifest.wait_for_operator]
+  manifest = {
+    apiVersion = "gitops.hybrid-cloud-patterns.io/v1alpha1"
+    kind       = "Pattern"
+    metadata = {
+      name      = "my-pattern-example"
+      namespace = var.operator_namespace
+    }
+    spec = {
+      gitSpec = {
+        inClusterGitServer = false
+        pollInterval       =  180
+        targetRepo         = "https://github.com/jstrahle/multicloud-gitops.git"
+        targetRevision     = "my-branch"
+      }
+    clusterGroupName       = "hub"
+    }
+  }
+}
+
 
 # Outputs
 output "subscription_name" {
