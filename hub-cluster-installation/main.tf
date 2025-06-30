@@ -74,28 +74,8 @@ resource "kubernetes_manifest" "validated_patterns_subscription" {
 }
 
 # Wait for operator to be ready
-resource "kubernetes_manifest" "wait_for_operator" {
+resource "null_resource" "wait_for_operator" {
   depends_on = [kubernetes_manifest.validated_patterns_subscription]
-  
-  manifest = {
-    apiVersion = "v1"
-    kind       = "ConfigMap"
-    metadata = {
-      name      = "validated-patterns-operator-check"
-      namespace = var.operator_namespace
-    }
-    data = {
-      check = "operator-installed"
-    }
-  }
-
-  wait {
-    fields = {
-    "metadata.namespace" = "validated-patterns-operator-check"
-    "metadata.name" = var.operator_namespace
-    }
-  }
-
   provisioner "local-exec" {
     command = <<-EOT
       echo "Waiting for Validated Patterns operator to be ready..."
@@ -120,7 +100,7 @@ resource "kubernetes_manifest" "wait_for_operator" {
 }
 
 resource "kubectl_manifest" "validated_patterns_pattern" {
-  depends_on = [kubernetes_manifest.validated_patterns_subscription]
+  depends_on = [null_resource.wait_for_operator]
   
   yaml_body = yamlencode({
     apiVersion = "gitops.hybrid-cloud-patterns.io/v1alpha1"
