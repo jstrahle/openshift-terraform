@@ -173,8 +173,9 @@ resource "kubernetes_config_map" "ack_user_config" {
 resource "kubernetes_annotations" "service_account_patch" {
   depends_on = [aws_iam_role.ack_controller]
 
+  api_version = "v1"
   kind       = "ServiceAccount"
-  metadata = {
+  metadata {
     name      = local.service_account_name
     namespace = local.ack_namespace
   }
@@ -188,13 +189,17 @@ resource "kubernetes_annotations" "service_account_patch" {
 resource "kubernetes_annotations" "restart_deployment" {
   depends_on = [kubernetes_annotations.service_account_patch]
 
+  api_version = "apps/v1"
   kind       = "Deployment"
-  metadata = {
+  metadata {
     name      = "ack-${var.service}-controller"
     namespace = local.ack_namespace
   }
   annotations = {
     "kubectl.kubernetes.io/restartedAt" = timestamp()
+  }
+  template_annotations = {
+    "kubectl.kubernetes.io/restartedPodAt" = timestamp()
   }
 }
  
