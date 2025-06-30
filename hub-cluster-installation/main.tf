@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "~> 2.0"
     }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.14.0"
+    }
   }
 }
 
@@ -38,6 +42,9 @@ variable "starting_csv" {
 
 # Providers
 provider "kubernetes" {
+  config_path = "~/.kube/config"
+}
+provider "kubectl" {
   config_path = "~/.kube/config"
 }
 
@@ -111,10 +118,10 @@ resource "kubernetes_manifest" "wait_for_operator" {
   }
 }
 
-# Create Pattern
-resource "kubernetes_manifest" "validated_patterns_pattern" {
-  depends_on = [kubernetes_manifest.wait_for_operator]
-  manifest = {
+resource "kubectl_manifest" "validated_patterns_pattern" {
+  depends_on = [kubernetes_manifest.validated_patterns_subscription]
+  
+  yaml_body = yamlencode({
     apiVersion = "gitops.hybrid-cloud-patterns.io/v1alpha1"
     kind       = "Pattern"
     metadata = {
@@ -124,15 +131,23 @@ resource "kubernetes_manifest" "validated_patterns_pattern" {
     spec = {
       gitSpec = {
         inClusterGitServer = false
-        pollInterval       =  180
+        pollInterval       = 180
         targetRepo         = "https://github.com/jstrahle/multicloud-gitops.git"
         targetRevision     = "my-branch"
       }
-    clusterGroupName       = "hub"
+      clusterGroupName = "hub"
     }
+  })
+
+  server_side_apply = true
+  wait             = true
+  
+  timeouts {
+    create = "15m"
+    update = "10m"
+    delete = "10m"
   }
 }
-
 
 # Outputs
 output "subscription_name" {
