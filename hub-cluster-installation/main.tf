@@ -70,7 +70,7 @@ resource "kubernetes_manifest" "validated_patterns_subscription" {
 resource "kubernetes_manifest" "wait_for_operator" {
   depends_on = [kubernetes_manifest.validated_patterns_subscription]
   
-  metadata = {
+  manifest = {
     apiVersion = "v1"
     kind       = "ConfigMap"
     metadata = {
