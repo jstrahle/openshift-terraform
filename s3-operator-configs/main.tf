@@ -173,12 +173,11 @@ resource "kubernetes_config_map" "ack_user_config" {
 resource "kubernetes_annotations" "service_account_patch" {
   depends_on = [aws_iam_role.ack_controller]
 
-  apiVersion = "v1"
   kind       = "ServiceAccount"
   metadata = {
     name      = local.service_account_name
     namespace = local.ack_namespace
-    }
+  }
   annotations = {
     "eks.amazonaws.com/role-arn" = aws_iam_role.ack_controller.arn
   }
@@ -189,7 +188,6 @@ resource "kubernetes_annotations" "service_account_patch" {
 resource "kubernetes_annotations" "restart_deployment" {
   depends_on = [kubernetes_annotations.service_account_patch]
 
-  apiVersion = "apps/v1"
   kind       = "Deployment"
   metadata = {
     name      = "ack-${var.service}-controller"
