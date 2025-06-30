@@ -82,9 +82,10 @@ resource "kubernetes_manifest" "wait_for_operator" {
     }
   }
 
-  wait_for = {
-    field = "metadata.name"
-    value = "validated-patterns-operator-check"
+  wait {
+    fields = {
+    "metadata.name" = "validated-patterns-operator-check"
+    }
   }
 
   provisioner "local-exec" {
