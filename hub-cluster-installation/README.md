@@ -10,6 +10,6 @@ This module:
 - Creates a Pattern resource pointing to your Git repository
 
 ## Required variables
-pattern_name - Name of the pattern to install
-pattern_repo - Git repository URL containing the pattern
-pattern_branch - Git branch to use
+- pattern_name - Name of the pattern to install
+- pattern_repo - Git repository URL containing the pattern
+- pattern_branch - Git branch to use
