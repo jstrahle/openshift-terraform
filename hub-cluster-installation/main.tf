@@ -40,6 +40,21 @@ variable "starting_csv" {
   default     = "patterns-operator.v0.0.61"
 }
 
+variable "pattern_name" {
+  description = "Name of the pattern to be installed"
+  type        = string
+}
+
+variable "pattern_repo" {
+  description = "Repository of the Pattern to be installed"
+  type        = string
+}
+
+variable "pattern_branch" {
+  description = "Git branch name where the installed Pattern is"
+  type        = string
+}
+
 # Providers
 provider "kubernetes" {
   config_path = "~/.kube/config"
@@ -106,15 +121,15 @@ resource "kubectl_manifest" "validated_patterns_pattern" {
     apiVersion = "gitops.hybrid-cloud-patterns.io/v1alpha1"
     kind       = "Pattern"
     metadata = {
-      name      = "my-pattern-example"
+      name      = var.pattern_name
       namespace = var.operator_namespace
     }
     spec = {
       gitSpec = {
         inClusterGitServer = false
         pollInterval       = 180
-        targetRepo         = "https://github.com/jstrahle/multicloud-gitops.git"
-        targetRevision     = "my-branch"
+        targetRepo         = var.pattern_repo
+        targetRevision     = var.pattern_branch
       }
       clusterGroupName = "hub"
     }
