@@ -12,9 +12,9 @@ This module creates the necessary resources to attach an existing OpenShift clus
 - **Namespace** - Creates dedicated namespace for cluster management
 
 ## Required variables
-cluster_name - Name of the cluster to import
-cluster_group - Cluster group label for organization
-kube_token - API token for the target cluster
-kube_server - API server URL for the target cluster
+- cluster_name - Name of the cluster to import
+- cluster_group - Cluster group label for organization
+- kube_token - API token for the target cluster
+- kube_server - API server URL for the target cluster
 
 You can get the API token and URL by logging into you OCP instance and clicking you username on top right corner, and selecting "Copy login command".
