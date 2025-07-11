@@ -68,6 +68,7 @@ locals {
     cloud        = "auto-detect"
     vendor       = "auto-detect"
     clusterGroup = var.cluster_group
+    devclusters  = "yes"
     group-one    = ""
   }, var.additional_labels)
 }
